@@ -2,20 +2,25 @@
 
 namespace FondOfSpryker\Zed\MimicCustomerAccount\Business;
 
-use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\RegisterCustomerOrderSaver;
-use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\RegisterCustomerOrderSaverInterface;
+use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\ForceRegisterCustomerOrderSaver;
+use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\ForceRegisterCustomerOrderSaverInterface;
 use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\UpdateGuestCartOrderSaver;
 use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\UpdateGuestCartOrderSaverInterface;
 use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
 
+/**
+ * @method \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface getRepository()
+ */
 class MimicCustomerAccountBusinessFactory extends AbstractBusinessFactory
 {
     /**
-     * @return \FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\RegisterCustomerOrderSaverInterface
+     * @return \FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\ForceRegisterCustomerOrderSaverInterface
      */
-    public function createCheckoutRegisterCustomerOrderSaver(): RegisterCustomerOrderSaverInterface
+    public function createCheckoutForceRegisterCustomerOrderSaver(): ForceRegisterCustomerOrderSaverInterface
     {
-        return new RegisterCustomerOrderSaver();
+        return new ForceRegisterCustomerOrderSaver(
+            $this->getRepository()
+        );
     }
 
     /**
@@ -23,6 +28,8 @@ class MimicCustomerAccountBusinessFactory extends AbstractBusinessFactory
      */
     public function createCheckoutUpdateGuestCartOrderSaver(): UpdateGuestCartOrderSaverInterface
     {
-        return new UpdateGuestCartOrderSaver();
+        return new UpdateGuestCartOrderSaver(
+            $this->getRepository()
+        );
     }
 }
