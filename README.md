@@ -1,7 +1,7 @@
-# Airtable Service
+# Spryker Mimic Customer Account
 
 ## Installation
 
 ```
-composer require fond-of-spryker/airtable
+composer require fond-of-spryker/mimic-customer-account
 ```
