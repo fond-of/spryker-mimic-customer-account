@@ -2,7 +2,7 @@
 
 namespace FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout;
 
-use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface;
+use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountEntityMangerInterface;
 use Generated\Shared\Transfer\QuoteTransfer;
 use Generated\Shared\Transfer\SaveOrderTransfer;
 
@@ -12,14 +12,14 @@ class UpdateGuestCartOrderSaver implements UpdateGuestCartOrderSaverInterface
     /**
      * @var \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface
      */
-    private $repository;
+    private $entityManager;
 
     /**
-     * @param \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface $repository
+     * @param \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountEntityMangerInterface $entityManager
      */
-    public function __construct(MimicCustomerAccountRepositoryInterface $repository)
+    public function __construct(MimicCustomerAccountEntityMangerInterface $entityManager)
     {
-        $this->repository = $repository;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -53,6 +53,6 @@ class UpdateGuestCartOrderSaver implements UpdateGuestCartOrderSaverInterface
      */
     protected function updateGuestCartCustomerReference(string $uuid, string $customerReference): bool
     {
-        return $this->repository->updateQuoteCustomerReference($uuid, $customerReference);
+        return $this->entityManager->updateQuoteCustomerReference($uuid, $customerReference);
     }
 }

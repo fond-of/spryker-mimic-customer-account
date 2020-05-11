@@ -10,6 +10,7 @@ use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
 
 /**
  * @method \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface getRepository()
+ * @method \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountEntityMangerInterface getEntityManager()
  */
 class MimicCustomerAccountBusinessFactory extends AbstractBusinessFactory
 {
@@ -29,7 +30,7 @@ class MimicCustomerAccountBusinessFactory extends AbstractBusinessFactory
     public function createCheckoutUpdateGuestCartOrderSaver(): UpdateGuestCartOrderSaverInterface
     {
         return new UpdateGuestCartOrderSaver(
-            $this->getRepository()
+            $this->getEntityManager()
         );
     }
 }

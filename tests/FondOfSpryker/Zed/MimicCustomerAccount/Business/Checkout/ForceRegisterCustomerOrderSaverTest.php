@@ -3,7 +3,7 @@
 namespace FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface;
+use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepository;
 use Generated\Shared\Transfer\CustomerTransfer;
 use Generated\Shared\Transfer\QuoteTransfer;
 use Generated\Shared\Transfer\SaveOrderTransfer;
@@ -26,6 +26,26 @@ class ForceRegisterCustomerOrderSaverTest extends Unit
     private $customerTransferMock;
 
     /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $registeredCustomerTransfer;
+
+    /**
+     * @var string
+     */
+    private $registeredCustomer = 'ref-1234';
+
+    /**
+     * @var string
+     */
+    private $registeredCustomerId = '1';
+
+    /**
+     * @var string
+     */
+    private $customerEmail = 'foo@bar.com';
+
+    /**
      * @return void
      */
     protected function _before()
@@ -34,51 +54,110 @@ class ForceRegisterCustomerOrderSaverTest extends Unit
         $this->customerTransferMock = $this->getMockBuilder(CustomerTransfer::class)->getMock();
 
         $this->saveOrderTransferMock = $this->getMockBuilder(SaveOrderTransfer::class)->getMock();
+
+        $this->registeredCustomerTransfer = $this->getMockBuilder(CustomerTransfer::class)->getMock();
+        $this->registeredCustomerTransfer
+            ->method('getCustomerReference')
+            ->willReturn($this->registeredCustomer);
+
+        $this->registeredCustomerTransfer
+            ->method('getIdCustomer')
+            ->willReturn($this->registeredCustomerId);
     }
 
     /**
      * @return void
      */
-    public function testAnonymousQuoteTransfer()
+    public function testNewCustomer()
     {
-        $this->quoteTransferMock->setCustomerReference('anonymous:1234');
-        $this->customerTransferMock->setCustomerReference('ref-1234');
-        $this->quoteTransferMock->setCustomer($this->customerTransferMock);
+        $this->customerTransferMock
+            ->expects($this->once())
+            ->method('setIsGuest');
 
-        $repository = $this->getMockBuilder(MimicCustomerAccountRepositoryInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $repository->expects($this->never())
-            ->method('updateQuoteCustomerReference')
-            ->with([
-                $this->stringContains('uuid-1234'),
-                $this->stringContains('ref-1234'),
-            ])
+        $this->customerTransferMock
+            ->expects($this->once())
+            ->method('requireEmail')
             ->willReturn(true);
 
-        $guestCartUpdater = new UpdateGuestCartOrderSaver($repository);
+        $this->customerTransferMock
+            ->expects($this->once())
+            ->method('setCustomerReference')
+            ->with($this->registeredCustomer)
+            ->willReturn($this->customerTransferMock);
 
-        $guestCartUpdater->saveOrderUpdateGuestCart($this->quoteTransferMock, $this->saveOrderTransferMock);
+        $this->customerTransferMock
+            ->expects($this->once())
+            ->method('setIdCustomer')
+            ->with($this->registeredCustomerId)
+            ->willReturn($this->customerTransferMock);
+
+        $this->customerTransferMock
+            ->expects($this->once())
+            ->method('getEmail')
+            ->willReturn($this->customerEmail);
+
+        $this->quoteTransferMock->method('getCustomer')->willReturn($this->customerTransferMock);
+
+        $repository = $this->getMockBuilder(MimicCustomerAccountRepository::class)
+            ->setMethods(['getCustomerByEmail'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $repository->expects($this->once())
+            ->method('getCustomerByEmail')
+            ->with($this->stringContains($this->customerEmail))
+            ->willReturn($this->registeredCustomerTransfer);
+
+        $forceRegisterCustomerSaver = new ForceRegisterCustomerOrderSaver($repository);
+
+        $forceRegisterCustomerSaver->saveOrderForceRegisterCustomer($this->quoteTransferMock, $this->saveOrderTransferMock);
     }
 
     /**
      * @return void
      */
-    public function testNonAnonymousQuoteTransfer()
+    public function testExistingCustomer()
     {
-        $quoteTransfer = new QuoteTransfer();
-        $saveOrderTransfer = new SaveOrderTransfer();
+        $this->customerTransferMock
+            ->expects($this->once())
+            ->method('setIsGuest');
 
-        $repository = $this->getMockBuilder(MimicCustomerAccountRepositoryInterface::class)
+        $this->customerTransferMock
+            ->expects($this->once())
+            ->method('requireEmail')
+            ->willReturn(true);
+
+        $this->customerTransferMock
+            ->expects($this->never())
+            ->method('setCustomerReference')
+            ->with($this->registeredCustomer)
+            ->willReturn($this->customerTransferMock);
+
+        $this->customerTransferMock
+            ->expects($this->never())
+            ->method('setIdCustomer')
+            ->with($this->registeredCustomerId)
+            ->willReturn($this->customerTransferMock);
+
+        $this->customerTransferMock
+            ->expects($this->once())
+            ->method('getEmail')
+            ->willReturn($this->customerEmail);
+
+        $this->quoteTransferMock->method('getCustomer')->willReturn($this->customerTransferMock);
+
+        $repository = $this->getMockBuilder(MimicCustomerAccountRepository::class)
+            ->setMethods(['getCustomerByEmail'])
             ->disableOriginalConstructor()
             ->getMock();
 
-        $repository->expects($this->never())
-            ->method('updateQuoteCustomerReference');
+        $repository->expects($this->once())
+            ->method('getCustomerByEmail')
+            ->with($this->stringContains($this->customerEmail))
+            ->willReturn(null);
 
-        $guestCartUpdater = new UpdateGuestCartOrderSaver($repository);
+        $forceRegisterCustomerSaver = new ForceRegisterCustomerOrderSaver($repository);
 
-        $guestCartUpdater->saveOrderUpdateGuestCart($quoteTransfer, $saveOrderTransfer);
+        $forceRegisterCustomerSaver->saveOrderForceRegisterCustomer($this->quoteTransferMock, $this->saveOrderTransferMock);
     }
 }

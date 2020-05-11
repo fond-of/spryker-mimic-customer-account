@@ -29,26 +29,4 @@ class MimicCustomerAccountRepository extends AbstractRepository implements Mimic
 
         return $customerTransfer->fromArray($customerEntity->toArray(), true);
     }
-
-    /**
-     * @param string $uuid
-     * @param string $customerRefrence
-     *
-     * @return bool
-     */
-    public function updateQuoteCustomerReference(string $uuid, string $customerRefrence): bool
-    {
-        $quoteEntity = $this->getFactory()
-            ->getQuoteQuery()
-            ->findOneByUuid($uuid);
-
-        if ($quoteEntity === null) {
-            return false;
-        }
-
-        $quoteEntity->setCustomerReference($customerRefrence);
-        $quoteEntity->save();
-
-        return true;
-    }
 }
