@@ -34,7 +34,7 @@ class UpdateGuestCartOrderSaver implements UpdateGuestCartOrderSaverInterface
         $customerTransfer = $quoteTransfer->getCustomer();
         $quoteCustomerRefernce = $quoteTransfer->getCustomerReference();
 
-        if (strstr($quoteCustomerRefernce, self::ANONYMOUS_IDENTIFIER)
+        if (strstr($quoteCustomerRefernce, static::ANONYMOUS_IDENTIFIER)
             && $customerTransfer->getCustomerReference() !== null
         ) {
             $updated = $this->updateGuestCartCustomerReference($quoteTransfer->getUuid(), $customerTransfer->getCustomerReference());

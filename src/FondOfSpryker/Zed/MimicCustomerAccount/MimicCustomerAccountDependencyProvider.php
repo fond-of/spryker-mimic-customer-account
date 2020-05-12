@@ -33,7 +33,7 @@ class MimicCustomerAccountDependencyProvider extends AbstractBundleDependencyPro
      */
     protected function getCustomerQuery(Container $container): Container
     {
-        $container[self::PROPEL_QUERY_CUSTOMER] = static function () {
+        $container[static::PROPEL_QUERY_CUSTOMER] = static function () {
             return SpyCustomerQuery::create();
         };
 
@@ -47,7 +47,7 @@ class MimicCustomerAccountDependencyProvider extends AbstractBundleDependencyPro
      */
     protected function getQuoteQuery(Container $container): Container
     {
-        $container[self::PROPEL_QUERY_QUOTE] = static function () {
+        $container[static::PROPEL_QUERY_QUOTE] = static function () {
             return SpyQuoteQuery::create();
         };
 
