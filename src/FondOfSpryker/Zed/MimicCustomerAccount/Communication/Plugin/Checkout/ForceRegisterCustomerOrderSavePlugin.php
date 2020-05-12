@@ -10,7 +10,7 @@ use Spryker\Zed\Kernel\Communication\AbstractPlugin;
 /**
  * @method \FondOfSpryker\Zed\MimicCustomerAccount\Business\MimicCustomerAccountFacade getFacade()
  */
-class RegisterCustomerOrderSavePlugin extends AbstractPlugin implements CheckoutDoSaveOrderInterface
+class ForceRegisterCustomerOrderSavePlugin extends AbstractPlugin implements CheckoutDoSaveOrderInterface
 {
     /**
      * @param \Generated\Shared\Transfer\QuoteTransfer $quoteTransfer
@@ -20,6 +20,6 @@ class RegisterCustomerOrderSavePlugin extends AbstractPlugin implements Checkout
      */
     public function saveOrder(QuoteTransfer $quoteTransfer, SaveOrderTransfer $saveOrderTransfer): void
     {
-        $this->getFacade()->saveOrderRegisterCustomer($quoteTransfer, $saveOrderTransfer);
+        $this->getFacade()->saveOrderForceRegisterCustomer($quoteTransfer, $saveOrderTransfer);
     }
 }

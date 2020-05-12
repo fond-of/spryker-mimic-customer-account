@@ -12,19 +12,23 @@ use Spryker\Zed\Kernel\Business\AbstractFacade;
 class MimicCustomerAccountFacade extends AbstractFacade implements MimicCustomerAccountFacadeInterface
 {
     /**
+     * {@inheritDoc}
+     *
      * @param \Generated\Shared\Transfer\QuoteTransfer $quoteTransfer
      * @param \Generated\Shared\Transfer\SaveOrderTransfer $saveOrderTransfer
      *
      * @return void
      */
-    public function saveOrderRegisterCustomer(QuoteTransfer $quoteTransfer, SaveOrderTransfer $saveOrderTransfer): void
+    public function saveOrderForceRegisterCustomer(QuoteTransfer $quoteTransfer, SaveOrderTransfer $saveOrderTransfer): void
     {
         $this->getFactory()
-            ->createCheckoutRegisterCustomerOrderSaver()
-            ->saveOrderRegisterCustomer($quoteTransfer, $saveOrderTransfer);
+            ->createCheckoutForceRegisterCustomerOrderSaver()
+            ->saveOrderForceRegisterCustomer($quoteTransfer, $saveOrderTransfer);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @param \Generated\Shared\Transfer\QuoteTransfer $quoteTransfer
      * @param \Generated\Shared\Transfer\SaveOrderTransfer $saveOrderTransfer
      *

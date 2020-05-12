@@ -3,30 +3,45 @@
 namespace FondOfSpryker\Zed\MimicCustomerAccount\Business;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\RegisterCustomerOrderSaverInterface;
-use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\UpdateGuestCartOrderSaverInterface;
+use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\ForceRegisterCustomerOrderSaver;
+use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\UpdateGuestCartOrderSaver;
+use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountEntityManager;
+use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepository;
 
 class MimicCustomerAccountBusinessFactoryTest extends Unit
 {
     /**
+     * @var \FondOfSpryker\Zed\MimicCustomerAccount\Business\MimicCustomerAccountBusinessFactory
+     */
+    private $factory;
+
+    /**
      * @return void
      */
-    public function testCreateRegisterCustomerOrderSaver(): void
+    protected function _before()
     {
-        $factory = new MimicCustomerAccountBusinessFactory();
-        $orderSaver = $factory->createCheckoutRegisterCustomerOrderSaver();
-
-        $this->assertInstanceOf(RegisterCustomerOrderSaverInterface::class, $orderSaver);
+        $this->factory = new MimicCustomerAccountBusinessFactory();
+        $repository = $this->getMockBuilder(MimicCustomerAccountRepository::class)->getMock();
+        $entityManager = $this->getMockBuilder(MimicCustomerAccountEntityManager::class)->getMock();
+        $this->factory->setRepository($repository);
+        $this->factory->setEntityManager($entityManager);
     }
 
     /**
      * @return void
      */
-    public function testCreateUpdateGuestCartOrderSaver(): void
+    public function testCreateCheckoutForceRegisterCustomerOrderSaver()
     {
-        $factory = new MimicCustomerAccountBusinessFactory();
-        $orderSaver = $factory->createCheckoutUpdateGuestCartOrderSaver();
+        $saver = $this->factory->createCheckoutForceRegisterCustomerOrderSaver();
+        $this->assertInstanceOf(ForceRegisterCustomerOrderSaver::class, $saver);
+    }
 
-        $this->assertInstanceOf(UpdateGuestCartOrderSaverInterface::class, $orderSaver);
+    /**
+     * @return void
+     */
+    public function testCreateCheckoutUpdateGuestCartOrderSaver()
+    {
+        $saver = $this->factory->createCheckoutUpdateGuestCartOrderSaver();
+        $this->assertInstanceOf(UpdateGuestCartOrderSaver::class, $saver);
     }
 }

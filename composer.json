@@ -10,7 +10,9 @@
   ],
   "require": {
     "php": ">=7.2",
-    "spryker/checkout-extension": "^1.2.0"
+    "spryker/checkout-extension": "^1.2.0",
+    "spryker/customer": "^6.0.0 || ^7.0.0",
+    "spryker/quote": "^1.0.0 || ^2.0.0"
   },
   "require-dev": {
     "spryker/code-sniffer": "^0.12",

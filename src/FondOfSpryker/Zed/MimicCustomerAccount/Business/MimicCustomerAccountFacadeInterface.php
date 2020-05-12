@@ -9,7 +9,9 @@ interface MimicCustomerAccountFacadeInterface
 {
     /**
      * Specification:
-     * - TODO: Write spec
+     * - Check if customer already exists in database
+     * - Update customer transfer with existing id and reference
+     * - Force isGuest to be false
      *
      * @api
      *
@@ -18,11 +20,13 @@ interface MimicCustomerAccountFacadeInterface
      *
      * @return void
      */
-    public function saveOrderRegisterCustomer(QuoteTransfer $quoteTransfer, SaveOrderTransfer $saveOrderTransfer): void;
+    public function saveOrderForceRegisterCustomer(QuoteTransfer $quoteTransfer, SaveOrderTransfer $saveOrderTransfer): void;
 
     /**
      * Specification:
-     * - TODO: Write spec
+     * - Validate if the quote is anonymous
+     * - Update customer reference for quote identified by uuid
+     * - Update quote transfer if quote has been updated
      *
      * @api
      *
