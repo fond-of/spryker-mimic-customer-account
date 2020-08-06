@@ -10,7 +10,7 @@ class UpdateGuestCartOrderSaver implements UpdateGuestCartOrderSaverInterface
 {
     private const ANONYMOUS_IDENTIFIER = 'anonymous:';
     /**
-     * @var \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface
+     * @var \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountEntityMangerInterface
      */
     private $entityManager;
 
