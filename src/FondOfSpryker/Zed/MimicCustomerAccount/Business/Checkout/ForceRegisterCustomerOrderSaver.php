@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout;
 
+use FondOfSpryker\Zed\MimicCustomerAccount\Dependency\Facade\MimicCustomerAccountToCustomerFacadeInterface;
 use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface;
 use Generated\Shared\Transfer\CustomerTransfer;
 use Generated\Shared\Transfer\QuoteTransfer;
@@ -10,15 +11,33 @@ use Generated\Shared\Transfer\SaveOrderTransfer;
 class ForceRegisterCustomerOrderSaver implements ForceRegisterCustomerOrderSaverInterface
 {
     /**
+     * @var array
+     */
+    public const GENDER_MAPPING = [
+        'Mr' => 'Male',
+        'Mrs' => 'Female',
+        'Dr' => null,
+        'Ms' => 'Female',
+        'Diverse' => 'Diverse',
+    ];
+
+    /**
      * @var \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface
      */
     private $repository;
 
     /**
+     * @var \FondOfSpryker\Zed\MimicCustomerAccount\Dependency\Facade\MimicCustomerAccountToCustomerFacadeInterface
+     */
+    protected $customerFacade;
+
+    /**
+     * @param \FondOfSpryker\Zed\MimicCustomerAccount\Dependency\Facade\MimicCustomerAccountToCustomerFacadeInterface $customerFacade
      * @param \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface $repository
      */
-    public function __construct(MimicCustomerAccountRepositoryInterface $repository)
+    public function __construct(MimicCustomerAccountToCustomerFacadeInterface $customerFacade, MimicCustomerAccountRepositoryInterface $repository)
     {
+        $this->customerFacade = $customerFacade;
         $this->repository = $repository;
     }
 
@@ -42,6 +61,16 @@ class ForceRegisterCustomerOrderSaver implements ForceRegisterCustomerOrderSaver
         }
 
         $customerTransfer->setIsGuest(false);
+
+        if ($customerTransfer->getIdCustomer() === null) {
+            $customerTransfer->setDefaultBillingAddress($quoteTransfer->getBillingAddress());
+            $customerTransfer->setDefaultShippingAddress($quoteTransfer->getShippingAddress());
+            $customerTransfer->setGender($this->getGender($customerTransfer->getSalutation()));
+            $customerTransfer->setPassword(sha1($this->generateRandomString()));
+            $customerResponseTransfer = $this->customerFacade->registerCustomer($customerTransfer);
+            $customerTransfer = $customerResponseTransfer->getCustomerTransfer();
+            $quoteTransfer->setCustomer($customerTransfer);
+        }
     }
 
     /**
@@ -58,5 +87,36 @@ class ForceRegisterCustomerOrderSaver implements ForceRegisterCustomerOrderSaver
         }
 
         return $customerTransfer;
+    }
+
+    /**
+     * @param int $length
+     *
+     * @return string
+     */
+    protected function generateRandomString(int $length = 10): string
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
+    }
+
+    /**
+     * @param string|null $salutation
+     *
+     * @return string|null
+     */
+    protected function getGender(?string $salutation): ?string
+    {
+        if ($salutation === null || !isset(static::GENDER_MAPPING[$salutation])) {
+            return null;
+        }
+
+        return static::GENDER_MAPPING[$salutation];
     }
 }

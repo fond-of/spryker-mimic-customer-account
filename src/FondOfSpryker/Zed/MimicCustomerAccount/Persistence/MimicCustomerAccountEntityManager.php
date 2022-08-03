@@ -11,21 +11,23 @@ class MimicCustomerAccountEntityManager extends AbstractEntityManager implements
 {
     /**
      * @param string $uuid
-     * @param string $customerRefrence
+     * @param string $customerReference
      *
      * @return bool
      */
-    public function updateQuoteCustomerReference(string $uuid, string $customerRefrence): bool
+    public function updateQuoteCustomerReference(string $uuid, string $customerReference): bool
     {
-        $quoteEntity = $this->getFactory()
-            ->getQuoteQuery()
-            ->findOneByUuid($uuid);
+        $query = $this->getFactory()
+            ->getQuoteQuery();
+        $quoteEntity = $query
+            ->filterByUuid($uuid)
+            ->findOne();
 
         if ($quoteEntity === null) {
             return false;
         }
 
-        $quoteEntity->setCustomerReference($customerRefrence);
+        $quoteEntity->setCustomerReference($customerReference);
         $quoteEntity->save();
 
         return true;

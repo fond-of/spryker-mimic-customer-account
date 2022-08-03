@@ -3,7 +3,9 @@
 namespace FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout;
 
 use Codeception\Test\Unit;
+use FondOfSpryker\Zed\MimicCustomerAccount\Dependency\Facade\MimicCustomerAccountToCustomerFacadeInterface;
 use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepository;
+use Generated\Shared\Transfer\CustomerResponseTransfer;
 use Generated\Shared\Transfer\CustomerTransfer;
 use Generated\Shared\Transfer\QuoteTransfer;
 use Generated\Shared\Transfer\SaveOrderTransfer;
@@ -46,6 +48,16 @@ class ForceRegisterCustomerOrderSaverTest extends Unit
     private $customerEmail = 'foo@bar.com';
 
     /**
+     * @var \FondOfSpryker\Zed\MimicCustomerAccount\Dependency\Facade\MimicCustomerAccountToCustomerFacadeInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $customerFacadeMock;
+
+    /**
+     * @var \Generated\Shared\Transfer\CustomerResponseTransfer|\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $customerResponseTransfer;
+
+    /**
      * @return void
      */
     protected function _before()
@@ -56,6 +68,8 @@ class ForceRegisterCustomerOrderSaverTest extends Unit
         $this->saveOrderTransferMock = $this->getMockBuilder(SaveOrderTransfer::class)->getMock();
 
         $this->registeredCustomerTransfer = $this->getMockBuilder(CustomerTransfer::class)->getMock();
+        $this->customerFacadeMock = $this->getMockBuilder(MimicCustomerAccountToCustomerFacadeInterface::class)->disableOriginalConstructor()->getMock();
+        $this->customerResponseTransfer = $this->getMockBuilder(CustomerResponseTransfer::class)->disableOriginalConstructor()->getMock();
         $this->registeredCustomerTransfer
             ->method('getCustomerReference')
             ->willReturn($this->registeredCustomer);
@@ -108,7 +122,15 @@ class ForceRegisterCustomerOrderSaverTest extends Unit
             ->with($this->stringContains($this->customerEmail))
             ->willReturn($this->registeredCustomerTransfer);
 
-        $forceRegisterCustomerSaver = new ForceRegisterCustomerOrderSaver($repository);
+        $this->customerFacadeMock->expects($this->once())
+            ->method('registerCustomer')
+            ->willReturn($this->customerResponseTransfer);
+
+        $this->customerResponseTransfer->expects($this->once())
+            ->method('getCustomerTransfer')
+            ->willReturn($this->customerTransferMock);
+
+        $forceRegisterCustomerSaver = new ForceRegisterCustomerOrderSaver($this->customerFacadeMock, $repository);
 
         $forceRegisterCustomerSaver->saveOrderForceRegisterCustomer($this->quoteTransferMock, $this->saveOrderTransferMock);
     }
@@ -134,6 +156,15 @@ class ForceRegisterCustomerOrderSaverTest extends Unit
             ->willReturn($this->customerTransferMock);
 
         $this->customerTransferMock
+            ->expects($this->once())
+            ->method('getIdCustomer')
+            ->willReturn(1);
+
+        $this->customerFacadeMock
+            ->expects($this->never())
+            ->method('registerCustomer');
+
+        $this->customerTransferMock
             ->expects($this->never())
             ->method('setIdCustomer')
             ->with($this->registeredCustomerId)
@@ -156,7 +187,7 @@ class ForceRegisterCustomerOrderSaverTest extends Unit
             ->with($this->stringContains($this->customerEmail))
             ->willReturn(null);
 
-        $forceRegisterCustomerSaver = new ForceRegisterCustomerOrderSaver($repository);
+        $forceRegisterCustomerSaver = new ForceRegisterCustomerOrderSaver($this->customerFacadeMock, $repository);
 
         $forceRegisterCustomerSaver->saveOrderForceRegisterCustomer($this->quoteTransferMock, $this->saveOrderTransferMock);
     }

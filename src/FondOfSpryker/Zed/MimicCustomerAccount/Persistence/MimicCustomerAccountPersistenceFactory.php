@@ -9,6 +9,7 @@ use Spryker\Zed\Kernel\Persistence\AbstractPersistenceFactory;
 
 /**
  * @method \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface getRepository()
+ * @method \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountEntityMangerInterface getEntityManager()()
  */
 class MimicCustomerAccountPersistenceFactory extends AbstractPersistenceFactory
 {

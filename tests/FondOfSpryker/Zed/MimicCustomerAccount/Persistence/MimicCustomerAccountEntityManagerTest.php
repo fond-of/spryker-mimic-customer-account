@@ -3,7 +3,8 @@
 namespace FondOfSpryker\Zed\MimicCustomerAccount\Persistence;
 
 use Codeception\Test\Unit;
-use stdClass;
+use Orm\Zed\Quote\Persistence\SpyQuote;
+use Orm\Zed\Quote\Persistence\SpyQuoteQuery;
 
 class MimicCustomerAccountEntityManagerTest extends Unit
 {
@@ -23,17 +24,17 @@ class MimicCustomerAccountEntityManagerTest extends Unit
     private $factory;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Orm\Zed\Quote\Persistence\SpyQuoteQuery
      */
     private $quoteQueryMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Orm\Zed\Quote\Persistence\SpyQuote
      */
     private $quoteEntityMock;
 
     /**
-     * @var \FondOfSpryker\Zed\MimicCustomerAccount\Business\MimicCustomerAccountBusinessFactory
+     * @var \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountEntityMangerInterface
      */
     private $entityManager;
 
@@ -42,21 +43,19 @@ class MimicCustomerAccountEntityManagerTest extends Unit
      */
     protected function _before()
     {
-        $this->factory = $this->getMockBuilder(MimicCustomerAccountPersistenceFactory::class)
-            ->setMethods(['getQuoteQuery'])
+        $this->factory = $this->getMockBuilder(MimicCustomerAccountPersistenceFactory::class)->disableOriginalConstructor()
             ->getMock();
-        $this->quoteQueryMock = $this->getMockBuilder('Orm\Zed\Quote\Persistence\SpyQuoteQuery')
-            ->setMethods(['findOneByUuid'])
+        $this->quoteQueryMock = $this->getMockBuilder(SpyQuoteQuery::class)->disableOriginalConstructor()
             ->getMock();
 
         $this->factory->expects($this->once())
             ->method('getQuoteQuery')
             ->willReturn($this->quoteQueryMock);
 
-        $this->quoteEntityMock = $this->getMockBuilder(stdClass::class)
-            ->setMethods(['setCustomerReference', 'save'])
+        $this->quoteEntityMock = $this->getMockBuilder(SpyQuote::class)->disableOriginalConstructor()
             ->getMock();
         $this->entityManager = new MimicCustomerAccountEntityManager();
+        $this->entityManager->setFactory($this->factory);
     }
 
     /**
@@ -65,8 +64,12 @@ class MimicCustomerAccountEntityManagerTest extends Unit
     public function testGetCustomerByEmailCustomerFound()
     {
         $this->quoteQueryMock->expects($this->once())
-            ->method('findOneByUuid')
+            ->method('filterByUuid')
             ->with($this->quoteUuid)
+            ->willReturnSelf();
+
+        $this->quoteQueryMock->expects($this->once())
+            ->method('findOne')
             ->willReturn($this->quoteEntityMock);
 
         $this->quoteEntityMock->expects($this->once())
@@ -75,8 +78,6 @@ class MimicCustomerAccountEntityManagerTest extends Unit
 
         $this->quoteEntityMock->expects($this->once())
             ->method('save');
-
-        $this->entityManager->setFactory($this->factory);
 
         $result = $this->entityManager->updateQuoteCustomerReference($this->quoteUuid, $this->customerReference);
         $this->assertTrue($result);
@@ -88,8 +89,12 @@ class MimicCustomerAccountEntityManagerTest extends Unit
     public function testGetCustomerByEmailCustomerNotFound()
     {
         $this->quoteQueryMock->expects($this->once())
-            ->method('findOneByUuid')
+            ->method('filterByUuid')
             ->with($this->quoteUuid)
+            ->willReturnSelf();
+
+        $this->quoteQueryMock->expects($this->once())
+            ->method('findOne')
             ->willReturn(null);
 
         $this->quoteEntityMock->expects($this->never())
@@ -98,8 +103,6 @@ class MimicCustomerAccountEntityManagerTest extends Unit
 
         $this->quoteEntityMock->expects($this->never())
             ->method('save');
-
-        $this->entityManager->setFactory($this->factory);
 
         $result = $this->entityManager->updateQuoteCustomerReference($this->quoteUuid, $this->customerReference);
         $this->assertFalse($result);

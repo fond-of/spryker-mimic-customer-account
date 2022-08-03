@@ -8,9 +8,13 @@ use Generated\Shared\Transfer\SaveOrderTransfer;
 
 class UpdateGuestCartOrderSaver implements UpdateGuestCartOrderSaverInterface
 {
-    private const ANONYMOUS_IDENTIFIER = 'anonymous:';
     /**
-     * @var \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepositoryInterface
+     * @var string
+     */
+    protected const ANONYMOUS_IDENTIFIER = 'anonymous:';
+
+    /**
+     * @var \FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountEntityMangerInterface
      */
     private $entityManager;
 
@@ -34,7 +38,8 @@ class UpdateGuestCartOrderSaver implements UpdateGuestCartOrderSaverInterface
         $customerTransfer = $quoteTransfer->getCustomer();
         $quoteCustomerRefernce = $quoteTransfer->getCustomerReference();
 
-        if (strstr($quoteCustomerRefernce, static::ANONYMOUS_IDENTIFIER)
+        if (
+            strstr($quoteCustomerRefernce, static::ANONYMOUS_IDENTIFIER)
             && $customerTransfer->getCustomerReference() !== null
         ) {
             $updated = $this->updateGuestCartCustomerReference($quoteTransfer->getUuid(), $customerTransfer->getCustomerReference());
