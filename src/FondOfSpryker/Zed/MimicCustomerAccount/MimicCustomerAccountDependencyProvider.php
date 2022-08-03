@@ -9,7 +9,14 @@ use Spryker\Zed\Kernel\Container;
 
 class MimicCustomerAccountDependencyProvider extends AbstractBundleDependencyProvider
 {
+    /**
+     * @var string
+     */
     public const PROPEL_QUERY_CUSTOMER = 'PROPEL_QUERY_CUSTOMER';
+
+    /**
+     * @var string
+     */
     public const PROPEL_QUERY_QUOTE = 'PROPEL_QUERY_QUOTE';
 
     /**

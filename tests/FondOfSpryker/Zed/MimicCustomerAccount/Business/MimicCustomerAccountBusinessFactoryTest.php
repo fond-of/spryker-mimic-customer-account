@@ -7,6 +7,8 @@ use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\ForceRegisterCustom
 use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\UpdateGuestCartOrderSaver;
 use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountEntityManager;
 use FondOfSpryker\Zed\MimicCustomerAccount\Persistence\MimicCustomerAccountRepository;
+use Spryker\Zed\Kernel\AbstractBundleConfig;
+use Spryker\Zed\Kernel\Container;
 
 class MimicCustomerAccountBusinessFactoryTest extends Unit
 {
@@ -16,6 +18,11 @@ class MimicCustomerAccountBusinessFactoryTest extends Unit
     private $factory;
 
     /**
+     * @var \Spryker\Zed\Kernel\Container|\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $containerMock;
+
+    /**
      * @return void
      */
     protected function _before()
@@ -23,8 +30,12 @@ class MimicCustomerAccountBusinessFactoryTest extends Unit
         $this->factory = new MimicCustomerAccountBusinessFactory();
         $repository = $this->getMockBuilder(MimicCustomerAccountRepository::class)->getMock();
         $entityManager = $this->getMockBuilder(MimicCustomerAccountEntityManager::class)->getMock();
+        $config = $this->getMockBuilder(AbstractBundleConfig::class)->getMock();
+        $this->containerMock = $this->getMockBuilder(Container::class)->disableOriginalConstructor()->getMock();
         $this->factory->setRepository($repository);
         $this->factory->setEntityManager($entityManager);
+        $this->factory->setConfig($config);
+        $this->factory->setContainer($this->containerMock);
     }
 
     /**

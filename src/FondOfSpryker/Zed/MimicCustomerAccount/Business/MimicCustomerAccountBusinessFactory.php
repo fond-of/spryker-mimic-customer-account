@@ -20,7 +20,7 @@ class MimicCustomerAccountBusinessFactory extends AbstractBusinessFactory
     public function createCheckoutForceRegisterCustomerOrderSaver(): ForceRegisterCustomerOrderSaverInterface
     {
         return new ForceRegisterCustomerOrderSaver(
-            $this->getRepository()
+            $this->getRepository(),
         );
     }
 
@@ -30,7 +30,7 @@ class MimicCustomerAccountBusinessFactory extends AbstractBusinessFactory
     public function createCheckoutUpdateGuestCartOrderSaver(): UpdateGuestCartOrderSaverInterface
     {
         return new UpdateGuestCartOrderSaver(
-            $this->getEntityManager()
+            $this->getEntityManager(),
         );
     }
 }

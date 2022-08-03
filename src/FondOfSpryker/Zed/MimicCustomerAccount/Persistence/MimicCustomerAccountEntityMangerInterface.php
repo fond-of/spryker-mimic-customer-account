@@ -6,9 +6,9 @@ interface MimicCustomerAccountEntityMangerInterface
 {
     /**
      * @param string $uuid
-     * @param string $customerRefrence
+     * @param string $customerReference
      *
      * @return bool
      */
-    public function updateQuoteCustomerReference(string $uuid, string $customerRefrence): bool;
+    public function updateQuoteCustomerReference(string $uuid, string $customerReference): bool;
 }
