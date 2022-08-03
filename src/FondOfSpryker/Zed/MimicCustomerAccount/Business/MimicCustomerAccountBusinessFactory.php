@@ -6,8 +6,6 @@ use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\ForceRegisterCustom
 use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\ForceRegisterCustomerOrderSaverInterface;
 use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\UpdateGuestCartOrderSaver;
 use FondOfSpryker\Zed\MimicCustomerAccount\Business\Checkout\UpdateGuestCartOrderSaverInterface;
-use FondOfSpryker\Zed\MimicCustomerAccount\Dependency\Facade\MimicCustomerAccountToCustomerFacadeInterface;
-use FondOfSpryker\Zed\MimicCustomerAccount\MimicCustomerAccountDependencyProvider;
 use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
 
 /**
@@ -22,7 +20,6 @@ class MimicCustomerAccountBusinessFactory extends AbstractBusinessFactory
     public function createCheckoutForceRegisterCustomerOrderSaver(): ForceRegisterCustomerOrderSaverInterface
     {
         return new ForceRegisterCustomerOrderSaver(
-            $this->getCustomerFacade(),
             $this->getRepository(),
         );
     }
@@ -35,13 +32,5 @@ class MimicCustomerAccountBusinessFactory extends AbstractBusinessFactory
         return new UpdateGuestCartOrderSaver(
             $this->getEntityManager(),
         );
-    }
-
-    /**
-     * @return \FondOfSpryker\Zed\MimicCustomerAccount\Dependency\Facade\MimicCustomerAccountToCustomerFacadeInterface
-     */
-    public function getCustomerFacade(): MimicCustomerAccountToCustomerFacadeInterface
-    {
-        return $this->getProvidedDependency(MimicCustomerAccountDependencyProvider::FACADE_CUSTOMER);
     }
 }
