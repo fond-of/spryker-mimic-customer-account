@@ -36,9 +36,7 @@ class ForceRegisterCustomerOrderSaver implements ForceRegisterCustomerOrderSaver
 
         $existingCustomer = $this->getCustomerByEmail($customerTransfer->getEmail());
         if ($existingCustomer !== null) {
-            $customerTransfer
-                ->setIdCustomer($existingCustomer->getIdCustomer())
-                ->setCustomerReference($existingCustomer->getCustomerReference());
+            $customerTransfer->fromArray($existingCustomer->toArray());
         }
 
         $customerTransfer->setIsGuest(false);
