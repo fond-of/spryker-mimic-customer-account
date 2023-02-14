@@ -42,6 +42,7 @@ class ForceRegisterCustomerOrderSaver implements ForceRegisterCustomerOrderSaver
         }
 
         $customerTransfer->setIsGuest(false);
+        $customerTransfer->setForcedRegister(true);
     }
 
     /**
